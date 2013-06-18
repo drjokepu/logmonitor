@@ -2,10 +2,21 @@
 	"name": "logmonitor",
 	"description": "Realtime Log Monitor",
 	"version": "0.0.1",
+	"author": "Tamas Czinege <tomi.czinege@gmail.com>",
+	"repository" :
+	{
+		"type": "git",
+		"url": "https://github.com/drjokepu/logmonitor.git"
+	},
+	"homepage": "https://github.com/drjokepu/logmonitor",
 	"private": true,
 	"dependencies":
 	{
 		"express": "3.2.x",
 		"socket.io": "*"
+	},
+	"engines":
+	{
+		"node": ">0.10.11"
 	}
 }

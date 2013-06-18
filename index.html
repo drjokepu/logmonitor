@@ -36,7 +36,7 @@
 	function listen()
 	{
 		var logElement = document.getElementById('log');
-		var socket = io.connect('http://localhost');
+		var socket = io.connect(window.location.toString());
 		socket.on('log', function (data)
 		{
 		    var element = document.createElement('pre');

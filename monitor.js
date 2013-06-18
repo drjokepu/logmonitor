@@ -7,7 +7,7 @@ var io = require('socket.io').listen(server);
 var config = require('./config.json');
 var watchedFile = config.watchedFile;
 
-server.listen(8080);
+server.listen(config.port, config.hostname);
 
 app.get('/', function(req, res)
 {

@@ -7,11 +7,14 @@ var io = require('socket.io').listen(server);
 var config = require('./config.json');
 var watchedFile = config.watchedFile;
 
+app.set('views', __dirname);
+app.engine('ejs', require('ejs').renderFile);
+app.set('view engine', 'ejs');
 server.listen(config.port, config.hostname);
 
 app.get('/', function(req, res)
 {
-	res.sendfile('index.html');
+	res.render('./index.ejs', { watchedFile: watchedFile });
 });
 
 io.sockets.on('connection', function (socket)

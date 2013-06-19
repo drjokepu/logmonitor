@@ -3,10 +3,14 @@
 <head>
 	<title>Log Monitor</title>
 	<style type="text/css">
-	h1
+	h1, h4
 	{
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 		text-align: center;
+	}
+	h4
+	{
+		font-weight: normal;
 	}
 	pre
 	{
@@ -18,7 +22,7 @@
 	#log
 	{
 		position: fixed;
-		top: 80px;
+		top: 120px;
 		left: 0px;
 		right: 0px;
 		bottom: 0px;
@@ -29,6 +33,7 @@
 </head>
 <body>
 	<h1>Log Monitor</h1>
+	<h4><%= watchedFile %></h4>
 	<div id="log">
 	</div>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>

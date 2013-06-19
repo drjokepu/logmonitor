@@ -20,6 +20,13 @@ io.sockets.on('connection', function (socket)
 	var length = fs.stat(watchedFile, function(err, stats)
 	{
 		knownLength = stats.size;
+		getTail(knownLength, function(str)
+		{
+			if (str != null)
+			{
+				sendLogEvent({ contents: str });
+			}
+		});
 		watch();
 	});
 	
@@ -40,8 +47,8 @@ io.sockets.on('connection', function (socket)
 					var buffer = new Buffer(tailLength);
 					fs.read(fd, buffer, 0, tailLength, oldLength, function(read_err, bytesRead, buffer)
 					{
-						var str = removeTrailingNewline(buffer.toString());
-						fs.close(fd);	
+						fs.close(fd);
+						var str = removeTrailingNewline(buffer.toString());	
 						sendLogEvent({ contents: str });
 					});
 				});
@@ -60,6 +67,63 @@ io.sockets.on('connection', function (socket)
 		socket.emit('log', logEvent);
 	}
 });
+
+function getTail(fileLength, callback)
+{
+	var maxTailLength = Math.min(fileLength, 512);
+	
+	if (maxTailLength > 0)
+	{
+		fs.open(watchedFile, 'r', function(fd_err, fd)
+		{
+			var buffer = new Buffer(maxTailLength);
+			fs.read(fd, buffer, 0, maxTailLength, fileLength - maxTailLength, function(read_err, bytesRead, buffer)
+			{
+				fs.close(fd);
+				
+				var tailStartIndex0 = -1;
+				for (var i = 0; i < maxTailLength; i++)
+				{
+					if (buffer[i] == 10)
+					{
+						tailStartIndex0 = i;
+						break;
+					}
+				}
+				
+				var tailStartIndex1 = -1;
+				var newLinesFound = 0;
+				for (var i = maxTailLength - 1; i >= 0; i--)
+				{
+					if (buffer[i] == 10)
+					{
+						newLinesFound++;
+						if (newLinesFound > 5)
+						{
+							tailStartIndex1 = i + 1;
+							break;
+						}
+					}
+				}
+				
+				var tailStartIndex = Math.min(Math.max(tailStartIndex0, tailStartIndex1), maxTailLength - 1);
+				console.log('tailStartIndex = ' + tailStartIndex);
+				if (tailStartIndex >= 0)
+				{
+					callback(buffer.toString('utf8', tailStartIndex));
+				}
+				else
+				{
+					callback(null);
+				}
+			});
+		});
+	}
+	else
+	{
+		callback(null);
+	}
+}
 
 function removeTrailingNewline(str)
 {
